@@ -1,3 +1,4 @@
+import { tracked } from "@glimmer/tracking";
 import { A } from "@ember/array";
 import Controller from "@ember/controller";
 import EmberObject, { action } from "@ember/object";
@@ -31,6 +32,7 @@ export default class SignupPageController extends Controller.extend(
   @service siteSettings;
   @service login;
 
+  @tracked accountUsername;
   accountChallenge = 0;
   accountHoneypot = 0;
   formSubmitted = false;
@@ -55,6 +57,11 @@ export default class SignupPageController extends Controller.extend(
     }
 
     this.fetchConfirmationValue();
+  }
+
+  @action
+  setAccountUsername(event) {
+    this.accountUsername = event.target.value;
   }
 
   get nameTitle() {
@@ -338,7 +345,7 @@ export default class SignupPageController extends Controller.extend(
       // If username field has been filled automatically, and email field just changed,
       // then remove the username.
       if (this.accountUsername === this.prefilledUsername) {
-        this.set("accountUsername", "");
+        this.accountUsername = "";
       }
       this.set("prefilledUsername", null);
     }
