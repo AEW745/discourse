@@ -15,17 +15,16 @@ import discourseDebounce from "discourse/lib/debounce";
 import discourseComputed, { bind } from "discourse/lib/decorators";
 import NameValidationHelper from "discourse/lib/name-validation-helper";
 import { userPath } from "discourse/lib/url";
+import UsernameValidationHelper from "discourse/lib/username-validation-helper";
 import { emailValid } from "discourse/lib/utilities";
 import PasswordValidation from "discourse/mixins/password-validation";
 import UserFieldsValidation from "discourse/mixins/user-fields-validation";
-import UsernameValidation from "discourse/mixins/username-validation";
 import { findAll } from "discourse/models/login-method";
 import User from "discourse/models/user";
 import { i18n } from "discourse-i18n";
 
 export default class SignupPageController extends Controller.extend(
   PasswordValidation,
-  UsernameValidation,
   UserFieldsValidation
 ) {
   @service site;
@@ -33,17 +32,19 @@ export default class SignupPageController extends Controller.extend(
   @service login;
 
   @tracked accountUsername;
+  //TODO: update consumers of this to use assignment over .set
+  @tracked isDeveloper = false;
   accountChallenge = 0;
   accountHoneypot = 0;
   formSubmitted = false;
   rejectedEmails = A();
   prefilledUsername = null;
   userFields = null;
-  isDeveloper = false;
   maskPassword = true;
   passwordValidationVisible = false;
   emailValidationVisible = false;
   nameValidationHelper = new NameValidationHelper(this);
+  usernameValidationHelper = new UsernameValidationHelper(this);
 
   @notEmpty("authOptions") hasAuthOptions;
   @setting("enable_local_logins") canCreateLocal;
@@ -62,6 +63,11 @@ export default class SignupPageController extends Controller.extend(
   @action
   setAccountUsername(event) {
     this.accountUsername = event.target.value;
+  }
+
+  @dependentKeyCompat
+  get usernameValidation() {
+    return this.usernameValidationHelper.usernameValidation;
   }
 
   get nameTitle() {
