@@ -451,7 +451,7 @@ export default class SignupPageController extends Controller.extend(
           return;
         }
 
-        this.set("isDeveloper", false);
+        this.isDeveloper = false;
         if (result.success) {
           // invalidate honeypot
           this._challengeExpiry = 1;
@@ -471,7 +471,7 @@ export default class SignupPageController extends Controller.extend(
         } else {
           this.set("flash", result.message || i18n("create_account.failed"));
           if (result.is_developer) {
-            this.set("isDeveloper", true);
+            this.isDeveloper = true;
           }
           if (
             result.errors &&
